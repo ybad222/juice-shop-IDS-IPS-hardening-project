@@ -1,0 +1,35 @@
+# ==============================================================================
+# Local Snort rules — Juice Shop defense-in-depth lab
+# SIDs >= 1,000,000 per Snort convention for locally-authored rules.
+# $HOME_NET is defined in snort.conf as 192.168.56.0/24 for this lab.
+# ==============================================================================
+
+# Baseline pedagogical rule: log every SSH connection attempt (any source)
+alert tcp any any -> any 22 (msg:"SSH connection attempt detected"; sid:10000001; rev:1;)
+
+# Exercise 1 — SSH attempt from a source other than the admin workstation
+# (!192.168.56.1 excludes the known-good admin IP; everything else alerts)
+alert tcp !192.168.56.1 any -> $HOME_NET 22 \
+  (msg:"SSH connection attempt from unauthorized host"; \
+   sid:10000010; rev:1; classtype:attempted-admin;)
+
+# Exercise 2 — XMAS scan (FIN+PSH+URG flag combination, classic nmap -sX)
+alert tcp any any -> $HOME_NET any \
+  (flags:FPU; msg:"XMAS scan attempt"; \
+   sid:10000011; rev:1; classtype:attempted-recon;)
+
+# Exercise 3 — Access to the sensitive acquisitions.md file
+# NOTE: Snort must sit where this traffic is still cleartext HTTP (e.g. the
+# loopback interface, or upstream of TLS termination) — it cannot inspect
+# the URI once traffic is wrapped in TLS on 8443. See ARCHITECTURE.md §4.
+alert http any any -> $HOME_NET any \
+  (msg:"Access to sensitive file acquisitions.md detected"; \
+   flow:to_server,established; content:"GET"; http_method; \
+   content:"/acquisitions.md"; http_uri; nocase; \
+   classtype:policy-violation; sid:10000012; rev:1;)
+
+# Exercise 5 — SYN flood (rate-based threshold; tune count/seconds per environment)
+alert tcp any any -> $HOME_NET 80 \
+  (flags:S; msg:"Possible SYN flood detected"; \
+   sid:10000020; rev:1; \
+   threshold:type both, track by_src, count 100, seconds 1;)

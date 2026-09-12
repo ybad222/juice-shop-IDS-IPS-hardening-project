@@ -1,0 +1,18 @@
+# /etc/systemd/system/alert-snort.service
+#
+# Runs Snort as a background NIDS service, logging alerts to
+# /var/log/snort/alert instead of a foreground console.
+# Replace enp0s8 with the host-only interface in your environment.
+
+[Unit]
+Description=Snort NIDS - Juice Shop defense-in-depth lab
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/snort -A fast -q -u snort -g snort -c /etc/snort/snort.conf --pid-path /run/snort/ -i enp0s8
+ExecStop=pkill -INT -F /run/snort/snort_enp0s8.pid
+
+[Install]
+WantedBy=default.target

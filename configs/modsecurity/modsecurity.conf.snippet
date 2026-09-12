@@ -1,0 +1,12 @@
+# Key directives added to /etc/modsecurity/modsecurity.conf
+# (starting point: the vendor-provided modsecurity.conf-recommended)
+#
+# Methodology: start in DetectionOnly to validate signatures against real
+# traffic without risking false-positive outages, then flip to "On" once
+# tuning is done (see README §Methodology).
+
+SecRuleEngine DetectionOnly      # -> changed to "On" for the IPS stage
+SecAuditEngine On
+SecAuditLogType Serial
+SecAuditLog /var/log/apache2/modsec_audit.log
+SecAuditLogParts ABDEFHIJZ

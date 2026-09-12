@@ -9,3 +9,8 @@ pki/private/
 # --- Raw logs (keep only curated excerpts under screenshots/) ---
 *.log
 
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.swp
+*.bak

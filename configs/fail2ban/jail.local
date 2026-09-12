@@ -1,0 +1,23 @@
+# /etc/fail2ban/jail.local
+# Custom jails live here — never edit jail.conf directly (it's overwritten
+# on package upgrades).
+#
+# bantime is intentionally short (15s) to make the ban/replay test cycle
+# fast to observe during the lab. Use minutes/hours in a real deployment.
+
+[sshd]
+port     = ssh
+enabled  = true
+filter   = sshd
+findtime = 1h
+bantime  = 15s
+maxretry = 3
+
+[modsec]
+enabled  = true
+port     = http,https,8443
+filter   = modsec
+action   = iptables-multiport[name=ModSec, port="http,https,8443"]
+logpath  = /var/log/apache2/modsec_audit.log
+bantime  = 15s
+maxretry = 3

@@ -1,0 +1,13 @@
+# Add to /etc/apache2/ports.conf so Apache actually binds the TLS port
+# used by juice_shop-vhost.conf.
+
+Listen 80
+Listen 8443
+
+<IfModule ssl_module>
+    Listen 443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+    Listen 443
+</IfModule>
