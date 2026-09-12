@@ -1,0 +1,11 @@
+# --- Secrets & PKI material: never commit real keys/certs ---
+*.key
+*.pem
+*.p12
+myCA/
+pki/private/
+.env
+
+# --- Raw logs (keep only curated excerpts under screenshots/) ---
+*.log
+
